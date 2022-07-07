@@ -67,8 +67,8 @@ def get_game_data(url: str):
 
             driver.find_element(By.XPATH, "//li[@ng-class='{disabled: noNext()||ngDisabled}']").click()
             time.sleep(1)
-    except Exception as e:
-        print(f"[ERROR] Ошибка: {e}")
+    except Exception:
+        print("[END] Все страницы обработаны")
 
     finally:
         driver.close()
