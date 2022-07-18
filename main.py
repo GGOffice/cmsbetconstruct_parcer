@@ -1,6 +1,7 @@
 # pip install beautifulsoup4 lxml requests wheel selenium
-
+import os
 import time
+from datetime import datetime
 
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -27,11 +28,14 @@ def get_game_data(url: str):
     time.sleep(15)
 
     # print(f"[INFO] Страница: {driver.window_handles}")
-    driver.switch_to.window(driver.window_handles[0])
-    print('[INFO] Закрываем страницу:', driver.title)
-    driver.close()
+    # driver.switch_to.window(driver.window_handles[0])
+    # print('[INFO] Закрываем страницу:', driver.title)
+    # driver.close()
+    # time.sleep(10)
     driver.switch_to.window(driver.window_handles[1])
     print('[INFO] Переходим на страницу:', driver.title)
+    time.sleep(10)
+    print('[INFO] Ждем полную загрузку страницы:', driver.title)
     time.sleep(10)
     driver.find_element(By.XPATH, "//i[@class='ico-cms']").click()
     time.sleep(5)
@@ -40,6 +44,7 @@ def get_game_data(url: str):
     time.sleep(5)
     driver.switch_to.window(driver.window_handles[1])
     print('[INFO] Переходим на страницу:', driver.title)
+    time.sleep(10)
 
     game_nums = driver.find_elements(By.XPATH, "//strong[@ng-show='pagination.totalItems']")
     games_count = game_nums[0].text.split()[-1]
@@ -53,16 +58,20 @@ def get_game_data(url: str):
     pages_count = int(games_count) // 25
     print(f"[INFO] Количество страниц: {pages_count+1}")
 
+    date = datetime.now().strftime("%d-%m-%Y")
+
+    os.mkdir(f"html_data/{date}")
+
     try:
         for i in range(pages_count + 1):
             cms_page = driver.title
-            time.sleep(1)
+            time.sleep(2)
 
             cms_page = cms_page.replace(" ", "_").strip()
             print(f"[INFO] Сохраняем страницу: {cms_page}_{i+1}")
-            time.sleep(1)
+            time.sleep(3)
 
-            with open(f"html_data/{cms_page}_{i+1}.html", "w", encoding="utf8") as file:
+            with open(f"html_data/{date}/{cms_page}_{i+1}.html", "w", encoding="utf8") as file:
                 file.write(driver.page_source)
 
             driver.find_element(By.XPATH, "//li[@ng-class='{disabled: noNext()||ngDisabled}']").click()
