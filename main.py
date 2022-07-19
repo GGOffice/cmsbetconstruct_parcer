@@ -1,6 +1,7 @@
 # pip install beautifulsoup4 lxml requests wheel selenium
 import os
 import time
+import os, glob
 from datetime import datetime
 
 from selenium import webdriver
@@ -58,9 +59,11 @@ def get_game_data(url: str):
     pages_count = int(games_count) // 25
     print(f"[INFO] Количество страниц: {pages_count+1}")
 
-    date = datetime.now().strftime("%d-%m-%Y")
+    # date = datetime.now().strftime("%d-%m-%Y")
 
-    os.mkdir(f"html_data/{date}")
+    for file in glob.glob("html_data/*.html"):
+        os.remove(file)
+        print("Deleted " + str(file))
 
     try:
         for i in range(pages_count + 1):
@@ -71,7 +74,7 @@ def get_game_data(url: str):
             print(f"[INFO] Сохраняем страницу: {cms_page}_{i+1}")
             time.sleep(3)
 
-            with open(f"html_data/{date}/{cms_page}_{i+1}.html", "w", encoding="utf8") as file:
+            with open(f"html_data/{cms_page}_{i+1}.html", "w", encoding="utf8") as file:
                 file.write(driver.page_source)
 
             driver.find_element(By.XPATH, "//li[@ng-class='{disabled: noNext()||ngDisabled}']").click()
